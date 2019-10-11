@@ -1,0 +1,135 @@
+USE association_db;
+
+-- Dropping and creating Tables for feedback_db
+
+DROP TABLE IF EXISTS `user_master`;
+DROP TABLE IF EXISTS `customer_master`;
+CREATE TABLE `customer_master` (
+  `customer_id` int(11) NOT NULL AUTO_INCREMENT,
+  `customer_name` nvarchar(150) NOT NULL,
+  `customer_reg_date` date NOT NULL,
+  `customer_address` nvarchar(100) NOT NULL,
+  `customer_mobile_no` nvarchar(13) NOT NULL,
+  `customer_email_id` nvarchar(150) NOT NULL,
+  `customer_logo` nvarchar(256) DEFAULT NULL,
+  `customer_website` nvarchar(100) DEFAULT NULL,
+  PRIMARY KEY (`customer_id`) USING BTREE,
+  UNIQUE KEY `identity_id_UNIQUE` (`customer_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `user_master` (
+  `user_inc_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` nvarchar(45) NOT NULL,
+  `user_name` nvarchar(90) NOT NULL,
+  `user_email` nvarchar(50) NOT NULL,
+  `user_mobile` nvarchar(13) NOT NULL,
+  `user_password` nvarchar(30) NOT NULL,
+  `user_type` nvarchar(10) NOT NULL,
+  `user_creation_date` datetime NOT NULL,
+  `user_start_date` datetime,
+  `user_end_date` datetime,
+  `user_is_active` tinyint(2) NOT NULL,
+  `user_customer_id` int(11),
+  `user_device_id` nvarchar(20),
+  PRIMARY KEY (`user_inc_id`),
+  UNIQUE KEY `user_id_UNIQUE` (`user_inc_id`),
+  KEY `fk_customer_id_idx` (`user_customer_id`),
+  CONSTRAINT `fk_customer_id` FOREIGN KEY (`user_customer_id`) REFERENCES `customer_master` (`customer_id`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `user_access_master`;
+CREATE TABLE `user_access_master` (
+  `user_inc_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` nvarchar(45) NOT NULL,
+  `user_function` nvarchar(10) NOT NULL,
+  `user_access` nvarchar(45) NOT NULL,
+  `user_access_start_date` datetime,
+  `user_access_end_date` datetime,
+  PRIMARY KEY (`user_inc_id`),
+  UNIQUE KEY `user_id_UNIQUE` (`user_inc_id`))
+  ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `control_master`;
+CREATE TABLE `control_master` (
+  `control_id` int(11) NOT NULL AUTO_INCREMENT,
+  `control_code` nvarchar(3) NOT NULL,
+  `control_name` nvarchar(150) NOT NULL,
+  `control_description` nvarchar(150) NOT NULL,
+  `control_type` char(1) NOT NULL,
+  `account_code` nvarchar(10) NOT NULL,
+  `control_start_date` date NOT NULL,
+  `control_end_date` date NOT NULL,
+  PRIMARY KEY (`control_id`,`control_code`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `account_master`;
+CREATE TABLE `account_master` (
+  `account_id` int(11) NOT NULL AUTO_INCREMENT,
+  `account_code` nvarchar(10) NOT NULL,
+  `account_type` char(1) NOT NULL,
+  `account_group` char(1) NOT NULL,
+  `account_name` nvarchar(150) NOT NULL,
+  `account_description` nvarchar(150) NOT NULL,
+  `account_yop_balance` double(12,2) NOT NULL,
+  `account_mop_balance` double(12,2) NOT NULL,
+  `account_curr_balance` double(12,2) NOT NULL,
+  `account_start_date` date NOT NULL,
+  `account_end_date` date NOT NULL,
+  PRIMARY KEY (`account_id`,`account_code`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `acc_tran_hdr`;
+CREATE TABLE `acc_tran_hdr` (
+  `acc_tran_id` int(11) NOT NULL AUTO_INCREMENT,
+  `acc_tran_code` char(3) NOT NULL,
+  `acc_tran_date` date NOT NULL,
+  `acc_tran_account_code` nvarchar(10) NOT NULL,
+  `acc_tran_type` char(1) NOT NULL,
+  `acc_tran_amount` double(12,2) NOT NULL,
+  `acc_tran_ref_no` nvarchar(10) NOT NULL,
+  `acc_tran_detail` nvarchar(150) NOT NULL,
+  `acc_tran_anal_code` nvarchar(10) NOT NULL,
+  PRIMARY KEY (`acc_tran_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `acc_tran_dtl`;
+CREATE TABLE `acc_tran_dtl` (
+  `acc_tran_id` int(11) NOT NULL AUTO_INCREMENT,
+  `acc_tran_hdr_id` int(11) NOT NULL,
+  `acc_tran_code` char(3) NOT NULL,
+  `acc_tran_account_code` varchar(10) NOT NULL,
+  `acc_tran_type` char(1) NOT NULL,
+  `acc_tran_dbcr_ind` char(1) NOT NULL,
+  `acc_tran_amount` double(12,2) NOT NULL,
+  `acc_tran_ref_no` nvarchar(10) NOT NULL,
+  `acc_tran_detail` nvarchar(150) NOT NULL,
+  PRIMARY KEY (`acc_tran_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+-- Dumping data for table `customer_master`
+INSERT INTO `customer_master` 
+(`customer_id`, `customer_name`, `customer_reg_date`, `customer_address`, `customer_mobile_no`, `customer_email_id`, `customer_logo`, `customer_website`) 
+VALUES 
+('0', 'Relevance Infosystems Pvt Ltd', '2019-08-01', 'MSR City, JP Nagar 8th Phase, Bangalore', '9740082668', 'contact@relevins.com', NULL, 'www.relevins.com'),
+('1', 'Wishpering Winds', '2019-09-01', 'JP Nagar, Bangalore', '9740082668', 'ww@gmai.com', NULL, 'www.ww.com');
+
+-- Dumping data for table `user_master`
+INSERT INTO `user_master` 
+(`user_inc_id`, `user_id`, `user_name`, `user_email`, `user_mobile`, `user_password`, `user_type`, `user_creation_date`, `user_start_date`,`user_end_date`, `user_is_active`, `user_customer_id`, `user_device_id`) 
+VALUES
+('0', 'mahauser', 'Relevance Maha User', 'mukundan.tn@relevins.com', '9740082668', 'mahauser', 'maha-user', '2019-08-01 00:00:00', '2019-09-01 00:00:00', '2029-09-01 00:00:00', '1', '0', 'any-device'),
+('1', 'wwsadm', 'Wishpering Winds Super User', 'wwsadm@gmail.com', '9999999999', 'wwsadm', 'super-user', '2019-08-01 00:00:00', '2019-09-01 00:00:00', '2020-09-01 00:00:00', '1', '1', 'any-device'),
+('2', 'wwadm', 'Wishpering Winds Admin User', 'wwadm@gmail.com', '9999999999', 'wwadm', 'admin-user', '2019-08-01 00:00:00', '2019-09-01 00:00:00', '2020-09-01 00:00:00', '1', '1', 'any-device'),
+('3', 'wwusr1', 'Wishpering Winds User1', 'wwusr1@gmail.com', '9999999999', 'wwusr1', 'Employee', '2019-08-01 00:00:00', '2019-09-01 00:00:00', '2020-09-01 00:00:00', '1', '1', 'any-device'),
+('4', 'wwusr2', 'Wishpering Winds User2', 'wwusr2@gmail.com', '9999999999', 'wwusr2', 'Employee', '2019-08-01 00:00:00', '2019-09-01 00:00:00', '2020-09-01 00:00:00', '1', '1', 'd4122211505556fb');
+COMMIT;
+
+
+-- End of Script 
+
